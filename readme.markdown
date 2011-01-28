@@ -3,10 +3,9 @@ Klout API Wrapper
 
 Requirements
 ------------
-PHP 5.2+
-Curl
-
-[Klout API Key](http://developer.klout.com/member/register)
+* PHP 5.2+
+* Curl
+* [Klout API Key](http://developer.klout.com/member/register)
 
 Installation:
 -------------
