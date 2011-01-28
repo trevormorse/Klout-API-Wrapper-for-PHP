@@ -40,10 +40,6 @@ class CalEvans_Klout {
      */
     protected $_handle       = '';
 
-    /**
-     * @var $_format the output format. xml or json are the only ones supported.
-     */
-    protected $_format       = 'json';
 
     /**
      * @var $_baseUrl the base url for the API. MUST END IN /
@@ -171,8 +167,7 @@ class CalEvans_Klout {
     public function influencedBy()
     {
         if (is_null($this->_influencedBy)) {
-            $output = $this->_fetch('influenced_by');
-            $this->_influencedBy = $this->_convertOutput($output);
+            $this->_influencedBy = $this->_fetch('influenced_by')->influencers;
         } // if (is_null($this->_influencedBy))
         return $this->_influencedBy;
     } // public function fetchInfluencedBy($handle=null)
@@ -188,10 +183,9 @@ class CalEvans_Klout {
     public function influencerOf()
     {
         if (is_null($this->_influencerOf)) {
-            $output = $this->_fetch('influencer_of');
-            $this->_influencerOf = $this->_convertOutput($output);
-            return $this->_influencerOf;
+            $this->_influencerOf = $this->_fetch('influencer_of')->influencees;
         } // if (is_null($this->_influencerOf)) 
+        return $this->_influencerOf;
     } // public function fetchInfluencedBy($handle=null)
     
     
@@ -205,8 +199,7 @@ class CalEvans_Klout {
     public function show()
     {
         if (is_null($this->_show)) {
-            $output = $this->_fetch('show');
-            $this->_show = $this->_convertOutput($output);
+            $this->_show = $this->_fetch('show');
         } // if (is_null($this->_show))
         return $this->_show;
     } // public function show($handle=null)
@@ -222,8 +215,7 @@ class CalEvans_Klout {
     public function topics()
     {
         if (is_null($this->_topics)) {
-            $output = $this->_fetch('topics');
-            $this->_topics = $this->_convertOutput($output);
+            $this->_topics = $this->_fetch('topics')->topics;
         } // if (is_null($this->_topics))
         return $this->_topics;
     } // public function topics($handle=null)
@@ -248,10 +240,10 @@ class CalEvans_Klout {
                                         'users'=>$this->_handle),'','&');
         
         $url = $this->_baseUrl.$this->_apiVersion . '/' .
-               $this->_getSubgroup($action) . $action. '.' .
-               $this->_format.'?'.$query;
-        
-        return $this->_execute($url);
+               $this->_getSubgroup($action) . $action. '.json?'.$query;
+        $storage = $this->_execute($url);
+        $storage = json_decode($storage);
+        return $storage->users[0];
     } // protected function fetch($handle=null, $action=null)
     
     
@@ -337,29 +329,5 @@ class CalEvans_Klout {
     }
     
     
-    /**
-     * _convertOutput
-     *
-     * converts the output to the requested format, either JSON or XML
-     *
-     * @param string $output The data to be converted
-     * @return multi
-     */
-    protected function _convertOutput($output=null)
-    {
-        if (is_null($output)) {
-            return null;
-        } // if (is_null($output))
-        
-        switch ($this->_format) {
-            case 'xml':
-                $returnValue = simplexml_load_string($output);
-                break;
-            case 'json':
-                $returnValue = json_decode($output);
-                break;
-        } // switch ($this->_format)
-        return $returnValue;
-    } // protected function _convertOutput($output=null)
     
 } // class Klout 
