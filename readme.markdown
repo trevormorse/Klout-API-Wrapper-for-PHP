@@ -15,9 +15,7 @@ Place the CalEvans directory in a directory in your include_path.
 Usage:
 ------
     $o = new CalEvans_Klout($key,'CalEvans');
-    $o->setFormat('json');
-    $topics = $o->topics();
-    foreach ($topics->users[0]->topics as $topic) {
+    foreach ($o->topics() as $topic) {
         echo $topic . "\n";
     }
 
