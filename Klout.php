@@ -6,7 +6,7 @@ require_once 'CalEvans/Klout/Exception.php';
  * Wrapper for the Klout.com API
  * http://developer.klout.com/page
  *
- * 
+ *
  * @package CalEvans_Klout
  * @copyright 2011 Cal Evans
  * @author Cal Evans <cal@calevans.com>
@@ -14,7 +14,7 @@ require_once 'CalEvans/Klout/Exception.php';
  * @version 1.0
  * @todo Move Curl code to it's own object implementing a Transport interface. Create Transport implementations for file_get_contents and using a stream.
  * @todo create namespace and implement
- * 
+ *
  * Usage:
  * $o = new CalEvans_Klout($key,'CalEvans');
  * $o->setFormat('json');
@@ -24,7 +24,7 @@ require_once 'CalEvans/Klout/Exception.php';
  * }
  */
 class CalEvans_Klout {
-    
+
     /**
      * @var $_apiVersion the version of the API this wrapper supports.
      */
@@ -57,16 +57,16 @@ class CalEvans_Klout {
     protected $_show         = null;
 
     /**
-     * @var $_show The output of a call to /influencedBy for this user.
+     * @var $_influencedBy The output of a call to /influencedBy for this user.
      */
     protected $_influencedBy = null;
 
     /**
-     * @var $_show The output of a call to /influencerOf for this user.
+     * @var $_influencerOf The output of a call to /influencerOf for this user.
      */
     protected $_influencerOf = null;
-    
-    
+
+
     /**
      * __construct
      *
@@ -84,10 +84,10 @@ class CalEvans_Klout {
         if (!is_null($handle)) {
             $this->setHandle($handle);
         } // if (!is_null($handle))
-        
+
     } // public function __construct($key=null)
-    
-    
+
+
     /**
      * setKey
      *
@@ -100,10 +100,10 @@ class CalEvans_Klout {
         if (!is_null($value)) {
             $this->_key = $value;
         } // if (!is_null($value))
-        
+
     } // public function setKey($key=null)
-    
-    
+
+
     /**
      * setHandle
      *
@@ -116,10 +116,10 @@ class CalEvans_Klout {
         if (!is_null($value)) {
             $this->_handle = $value;
         } // if (!is_null($value))
-        
+
     } // public function setHandle($value=null)
-    
-    
+
+
     /**
      * getHandle
      *
@@ -131,8 +131,8 @@ class CalEvans_Klout {
     {
         return $this->_handle;
     }
-    
-    
+
+
     /**
      * setFormat
      *
@@ -143,7 +143,7 @@ class CalEvans_Klout {
     public function setFormat($value=null)
     {
         if (!is_null($value)) {
-            
+
             switch($value) {
                 case 'json':
                 case 'xml':
@@ -151,12 +151,12 @@ class CalEvans_Klout {
                     break;
                 default:
             } // switch($value)
-            
+
         } // if (!is_null($value))
-        return;        
+        return;
     } // public function setFormat($value=null)
-    
-    
+
+
     /**
      * influencedBy
      *
@@ -171,8 +171,8 @@ class CalEvans_Klout {
         } // if (is_null($this->_influencedBy))
         return $this->_influencedBy;
     } // public function fetchInfluencedBy($handle=null)
-    
-    
+
+
     /**
      * influencerOf
      *
@@ -184,11 +184,11 @@ class CalEvans_Klout {
     {
         if (is_null($this->_influencerOf)) {
             $this->_influencerOf = $this->_fetch('influencer_of')->influencees;
-        } // if (is_null($this->_influencerOf)) 
+        } // if (is_null($this->_influencerOf))
         return $this->_influencerOf;
     } // public function fetchInfluencedBy($handle=null)
-    
-    
+
+
     /**
      * show
      *
@@ -203,8 +203,8 @@ class CalEvans_Klout {
         } // if (is_null($this->_show))
         return $this->_show;
     } // public function show($handle=null)
-    
-    
+
+
     /**
      * topics
      *
@@ -219,12 +219,12 @@ class CalEvans_Klout {
         } // if (is_null($this->_topics))
         return $this->_topics;
     } // public function topics($handle=null)
-    
-    
+
+
     /**
      * _fetch
      *
-     * prepares all calls to the API. 
+     * prepares all calls to the API.
      *
      * @param string $action The action to be performed.
      * @return string
@@ -235,18 +235,18 @@ class CalEvans_Klout {
         if (is_null($action)) {
             throw new CalEvans_Klout_Exception('No action was specified.',-1);
         }
-        
+
         $query = http_build_query(array('key'=>$this->_key,
                                         'users'=>$this->_handle),'','&');
-        
+
         $url = $this->_baseUrl.$this->_apiVersion . '/' .
                $this->_getSubgroup($action) . $action. '.json?'.$query;
         $storage = $this->_execute($url);
         $storage = json_decode($storage);
         return $storage->users[0];
     } // protected function fetch($handle=null, $action=null)
-    
-    
+
+
     /**
      * _getSubgroup
      *
@@ -261,23 +261,23 @@ class CalEvans_Klout {
             case 'klout':
                 $subGroup='';
                 break;
-            
+
             case 'influenced_by':
             case 'influencer_of':
                 $subGroup='soi/';
                 break;
-            
+
             case 'show':
             case 'topics':
                 $subGroup='users/';
                 break;
             default:
                 $subGroup = '';
-        } // switch($action) 
-        return $subGroup;        
+        } // switch($action)
+        return $subGroup;
     } // protected function _getSubroup($action=null)
-    
-    
+
+
     /**
      * _execute
      *
@@ -286,7 +286,7 @@ class CalEvans_Klout {
      * @param string $url The url to call.
      * @return string
      * @throws CalEvans_Klout_Exception
-     * 
+     *
      */
     protected function _execute($url=null)
     {
@@ -296,11 +296,11 @@ class CalEvans_Klout {
 
         $output = '';
         $ch = curl_init($url);
-        
+
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        $output = curl_exec($ch);         
+        $output = curl_exec($ch);
 
         // Check if any error occured
         if(curl_errno($ch))
@@ -310,24 +310,24 @@ class CalEvans_Klout {
             $errno   = curl_errno($ch);
 
             curl_close($ch);
-            
+
             throw new CalEvans_Klout_Exception($message,$errno);
         } else if(curl_getinfo($ch,CURLINFO_HTTP_CODE)!==200) {
             // http error
             $message = 'There was an error retrieving the api call.';
             $errno   = curl_getinfo($ch,CURLINFO_HTTP_CODE);
             curl_close($ch);
-            
+
             throw new CalEvans_Klout_Exception($message,$errno);
         } else {
             // everything went fine
             curl_close($ch);
         } // if(curl_errno($ch))
-        
-        
-        return $output;    
+
+
+        return $output;
     }
-    
-    
-    
-} // class Klout 
+
+
+
+} // class Klout
